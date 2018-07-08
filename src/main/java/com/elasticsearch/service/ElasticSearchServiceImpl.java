@@ -1,31 +1,26 @@
 package com.elasticsearch.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-
-import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.elasticsearch.constants.ElasticSearchConstants;
 import java.io.IOException;
 
 import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+
+import com.elasticsearch.constants.ElasticSearchConstants;
 
 @Service
 public class ElasticSearchServiceImpl implements ElasticSearchService{
 
 	@Autowired
 	private Environment env;
-	private int responseCode;
-	
-	public String getSearchResults(String planName,String sponsorState, String sponsorName) {		
-        return processSearchResults(planName, sponsorState, sponsorName);
-	}
-	
-	private String processSearchResults(String planName,String sponsorState, String sponsorName) {
+
+	@Override
+    public String getSearchResults(String planName,String sponsorState, String sponsorName) {
 		String index = ElasticSearchConstants.SEARCH_INDEX;
 		Response response = null;
         String results = null;
@@ -35,7 +30,6 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 			client = getElasticSearchClient();
 			response = client.performRequest("GET", "/" + index + "/_search?q="+query);
 			results = EntityUtils.toString(response.getEntity());
-			responseCode = response.getStatusLine().getStatusCode();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -45,24 +39,25 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 				e.printStackTrace();
 			}
 		}
-       return results; 
+        return results;
 	}
-	
+
 	private RestClient getElasticSearchClient() {
 		return RestClient.builder(new HttpHost(env.getProperty("aws.elasticsearch.host"))).build();
 	}
 
 	private String buildElasticSearchQuery(String planName, String sponsorState, String sponsorName) {
 		StringBuilder sb = new StringBuilder();
-		if (planName !=null) {
+		if (Strings.isNotBlank(planName)) {
 			sb.append("+PLAN_NAME:").append(planName);
 		}
-		if(sponsorName != null) {
+		if(Strings.isNotBlank(sponsorName)) {
 			sb.append("+SPONSOR_DFE_NAME:").append(sponsorName);
 		}
-		if(sponsorState != null) {
+		if(Strings.isNotBlank(sponsorState)) {
 			sb.append("+SPONS_DFE_MAIL_US_STATE:").append(sponsorState);
 		}
 		return sb.toString();
 	}
+
 }
