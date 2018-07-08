@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.elasticsearch.constants.ElasticSearchConstants;
-import com.elasticsearch.gateway.model.ApiGatewayRequest;
-import com.elasticsearch.gateway.model.ApiGatewayResponse;
-
 import java.io.IOException;
 
 import org.apache.http.HttpHost;
@@ -68,15 +65,4 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 		}
 		return sb.toString();
 	}
-
-	@Override
-	public ApiGatewayResponse getSearchResults(ApiGatewayRequest req, Context ctx) {
-		ApiGatewayResponse response = new ApiGatewayResponse();
-		LambdaLogger logger = ctx.getLogger();
-		String results = processSearchResults(req.getQueryStringParameters().get("planName"), req.getQueryStringParameters().get("sponsorState"), req.getQueryStringParameters().get("sponsorName"));
-		response.setBody(results);
-		response.setStatusCode(String.valueOf(responseCode));
-		return response;
-	}
-
 }
