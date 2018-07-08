@@ -15,11 +15,11 @@ public class ConvertCSVtoJson {
 	public static void main(String args[]) {
 		// read the csv file and build a json string
 		File csvFile = new File("resources/f_5500_2017_latest.csv");
-		File outputJsonFile = new File("resources/bulk_upload_1.json");
+		File outputJsonFile = new File("resources/bulk_upload_2.json");
 		CsvSchema csvSchema = CsvSchema.builder().setUseHeader(true).build();
 		CsvMapper csvMapper = new CsvMapper();
 		List<Object> readAll;
-		int numDocsToIndex = 2;
+		int numDocsToIndex = 1000;
 		FileWriter fw = null;
 		try {
 			readAll = csvMapper.readerFor(Map.class).with(csvSchema).readValues(csvFile).readAll();

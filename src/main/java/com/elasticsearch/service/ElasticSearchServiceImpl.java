@@ -1,6 +1,9 @@
 package com.elasticsearch.service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import org.apache.http.HttpHost;
 import org.apache.http.util.EntityUtils;
@@ -23,8 +26,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
     public String getSearchResults(String planName,String sponsorState, String sponsorName) {
 		String index = ElasticSearchConstants.SEARCH_INDEX;
 		Response response = null;
-        String results = null;
-        String query = buildElasticSearchQuery(planName,sponsorState,sponsorName);
+        String query = null,results = null;
+        try {
+        	 query = buildElasticSearchQuery(planName,sponsorState,sponsorName);
+        } catch (UnsupportedEncodingException e) {
+        	e.printStackTrace();
+        }
         RestClient client = null;
 		try {
 			client = getElasticSearchClient();
@@ -46,16 +53,16 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 		return RestClient.builder(new HttpHost(env.getProperty("aws.elasticsearch.host"))).build();
 	}
 
-	private String buildElasticSearchQuery(String planName, String sponsorState, String sponsorName) {
+	private String buildElasticSearchQuery(String planName, String sponsorState, String sponsorName) throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder();
 		if (Strings.isNotBlank(planName)) {
-			sb.append("+PLAN_NAME:").append(planName);
+			sb.append("+PLAN_NAME:").append(URLEncoder.encode(planName, "UTF-8"));
 		}
 		if(Strings.isNotBlank(sponsorName)) {
-			sb.append("+SPONSOR_DFE_NAME:").append(sponsorName);
+			sb.append("+SPONSOR_DFE_NAME:").append(URLEncoder.encode(sponsorName, "UTF-8"));
 		}
 		if(Strings.isNotBlank(sponsorState)) {
-			sb.append("+SPONS_DFE_MAIL_US_STATE:").append(sponsorState);
+			sb.append("+SPONS_DFE_MAIL_US_STATE:").append(URLEncoder.encode(sponsorState, "UTF-8"));
 		}
 		return sb.toString();
 	}
