@@ -2,6 +2,14 @@
 
 This is a Spring Boot application thats connects with AWS Elastic Search service and renders search resutls.
 
+Building the Project;
+-----------------------
+
+1) mvn clean package
+2) mvn spring-boot::run
+
+The Jar generated aws-elastic-search-integration-0.1.0.jar is uploaded to Lambda function created in the AWS console.
+
 Step 1:
 --------
 Bulk upload the Json payload that has the data from f_5500_2017_latest.csv using the below Curl command. 
